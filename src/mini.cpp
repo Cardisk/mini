@@ -40,7 +40,19 @@ namespace {
             }
 
             if (src[cur] == '[') {
-                // TODO: handle section.
+                // eating '['.
+                size_t start = ++cur;
+                // eating the identidier.
+                while (src[cur] != ']') cur++;
+
+                Token t = {
+                    .type = Type::SECTION,
+                    .data = src.substr(start, cur - start),
+                };
+                
+                // eating ']'.
+                cur++;
+                tkns.emplace_back(t);
                 continue;
             }
 

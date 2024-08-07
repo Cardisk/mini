@@ -35,31 +35,4 @@ namespace mini {
 
     Object read(std::string at);
     bool write(Object &obj, char separator);
-
-    namespace {
-        enum Type {
-            INVALID = 0,
-            SECTION,
-            IDENTIFIER,
-            SEPARATOR,
-        };
-
-
-        struct Token {
-            Type type;
-            uint32_t data;
-            size_t len;
-        };
-
-        typedef std::vector<Token> Tokens;
-
-        class Tokenizer {
-            explicit Tokenizer(std::string src): src(src) {}
-
-            Tokens tknz();
-        private:
-            std::string src;
-        };
-        
-    }
 }
