@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
+#include <utility>
 
 using namespace mini;
 
@@ -108,17 +109,19 @@ namespace {
 }
 
 bool Section::add_section(std::string name) {
-    return false;
+    return this->sections.insert(std::make_pair(name, Section(name))).second;
 }
 
 Section &Section::get_section(std::string name) {
+    return this->sections.at(name);
 }
 
 bool Section::add_prop(std::string name, std::string val) {
-    return false;
+    return this->props.insert(std::make_pair(name, val)).second;
 }
 
 std::string &Section::get_prop(std::string name) {
+    return this->props.at(name);
 }
 
 Object read(std::string at) {
