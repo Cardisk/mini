@@ -114,7 +114,17 @@ bool Section::add_section(std::string name) {
 Section &Section::get_section(std::string name) {
 }
 
+bool Section::add_prop(std::string name, std::string val) {
+    return false;
+}
+
+std::string &Section::get_prop(std::string name) {
+}
+
 Object read(std::string at) {
+    if (!at.ends_with(".ini"))
+        error("Invalid file extension of '%s', expected '.ini'.", at.c_str());
+
     std::string src = read_from_file(at);
     Tokens tkns = lex(src);
 
