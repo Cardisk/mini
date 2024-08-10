@@ -3,7 +3,11 @@
 #include <cstdlib>
 #include <fstream>
 
-#define error(format, ...) fprintf(stderr, format, __VA_ARGS__), exit(EXIT_FAILURE); 
+using namespace mini;
+
+#define error(format, ...) do { fprintf(stderr, format, __VA_ARGS__), exit(EXIT_FAILURE); } while (0)
+
+#define UNREACHABLE error("Technically reaching this branch is impossible.", NULL)
 
 namespace {
     enum Type {
@@ -30,10 +34,9 @@ namespace {
 
     Tokens lex(std::string src) {
         Tokens tkns;
-        // TODO: implement lexing here.
         size_t cur = 0;
-        while (src[cur] != src.back()) {
-            if (src[cur] == '\n') {
+        while (cur < src.size() && src[cur] != src.back()) {
+            if (src[cur] == '\n' || src[cur] == ' ') {
                 // TODO: maybe handle token position?
                 cur++;
                 continue;
@@ -43,7 +46,7 @@ namespace {
                 // eating '['.
                 size_t start = ++cur;
                 // eating the identidier.
-                while (src[cur] != ']') cur++;
+                while (cur < src.size() && src[cur] != ']') cur++;
 
                 Token t = {
                     .type = Type::SECTION,
@@ -57,17 +60,109 @@ namespace {
             }
 
             if (src[cur] == ':' || src[cur] == '=') {
-                // TODO: handle separator.
+                // eating the separator.
+                size_t start = cur++;
+
+                Token t = {
+                    .type = Type::SEPARATOR,
+                    .data = src.substr(start, cur - start),
+                };
+
+                tkns.emplace_back(t);
                 continue;
             }
 
             if (src[cur] == '"') {
-                // TODO: handle strings.
+                // eating '"'.
+                size_t start = ++cur;
+                // eating the identidier.
+                while (cur < src.size() && src[cur] != '"') cur++;
+
+                Token t = {
+                    .type = Type::IDENTIFIER,
+                    .data = src.substr(start, cur - start),
+                };
+                
+                // eating '"'.
+                cur++;
+                tkns.emplace_back(t);
                 continue;
             }
 
-            // TODO: handle the token as a property.
+            size_t start = cur++;
+
+            while (cur < src.size() && 
+                    src[cur] != ' ' && 
+                    src[cur] != ':' && 
+                    src[cur] != '=') cur++;
+
+            Token t = {
+                .type = Type::IDENTIFIER,
+                .data = src.substr(start, cur - start),
+            };
+
+            tkns.emplace_back(t);
         }
         return tkns;
     }
+}
+
+bool Section::add_section(std::string name) {
+    return false;
+}
+
+Section &Section::get_section(std::string name) {
+}
+
+Object read(std::string at) {
+    std::string src = read_from_file(at);
+    Tokens tkns = lex(src);
+
+    Object obj { 
+        .file_path = at,
+        .global = Section(),
+    };
+
+    Section &sec = obj.global;
+
+    size_t cur = 0;
+    while (cur < tkns.size()) {
+        switch (tkns[cur].type) {
+        case Type::SECTION: {
+            std::string name = tkns[cur].data;
+            if (!sec.add_section(name)) 
+                error("Cannot insert '%s' section.", name.c_str());
+
+            sec = sec.get_section(name);
+            // eating the section declaration.
+            cur++;
+        } break;
+        case Type::IDENTIFIER: {
+            std::string name = tkns[cur].data;
+            // eating property name.
+            cur++;
+            if (cur < tkns.size() && !(tkns[cur].type == Type::SEPARATOR))
+                error("Missing separator for property '%s'.", name.c_str());
+            // eating the separator.
+            cur++;
+            if (cur >= tkns.size()) 
+                error("Unfinished property definition.", NULL);
+
+            std::string value = tkns[cur].data;
+            if (!sec.add_prop(name, value)) 
+                error("Cannot insert property '%s'.", name.c_str());
+            // eating property value.
+            cur++;
+        } break;
+        case Type::SEPARATOR:
+        case Type::INVALID:
+            UNREACHABLE;
+        }
+    }
+
+    return obj;
+}
+
+bool write(Object &obj, char separator) {
+    return false;
 }

@@ -12,6 +12,7 @@ namespace mini {
     typedef std::unordered_map<std::string, Section> Sections;
 
     class Section {
+    public:
         explicit Section(std::string name = "global"): name(std::move(name)) {}
 
         std::string &get_name() { return this->name; }
