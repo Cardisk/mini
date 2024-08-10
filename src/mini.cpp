@@ -1,14 +1,13 @@
 #include "mini.h"
-#include <cstdio>
-#include <cstdlib>
+
+#include <cstring>
+#include <iostream>
 #include <fstream>
 #include <utility>
 
-using namespace mini;
+#define error(format) do { std::cerr << format, exit(1); } while(0)
 
-#define error(format, ...) do { fprintf(stderr, format, __VA_ARGS__), exit(EXIT_FAILURE); } while (0)
-
-#define UNREACHABLE error("Technically reaching this branch is impossible.", NULL)
+#define UNREACHABLE error("Technically reaching this branch is impossible.")
 
 namespace {
     enum Type {
@@ -27,7 +26,8 @@ namespace {
 
     std::string read_from_file(std::string file_path) {
         std::ifstream file(file_path);
-        if (!file.is_open()) error("Could not open %s.\n", file_path.c_str());
+        if (!file.is_open()) 
+            error("Could not open '" << file_path << "': " << strerror(errno) << "\n");
         std::string src;
         file >> src;
         return src;
@@ -108,25 +108,25 @@ namespace {
     }
 }
 
-bool Section::add_section(std::string name) {
+bool mini::Section::add_section(std::string name) {
     return this->sections.insert(std::make_pair(name, Section(name))).second;
 }
 
-Section &Section::get_section(std::string name) {
+mini::Section &mini::Section::get_section(std::string name) {
     return this->sections.at(name);
 }
 
-bool Section::add_prop(std::string name, std::string val) {
+bool mini::Section::add_prop(std::string name, std::string val) {
     return this->props.insert(std::make_pair(name, val)).second;
 }
 
-std::string &Section::get_prop(std::string name) {
+std::string &mini::Section::get_prop(std::string name) {
     return this->props.at(name);
 }
 
-Object read(std::string at) {
+mini::Object mini::read(std::string at) {
     if (!at.ends_with(".ini"))
-        error("Invalid file extension of '%s', expected '.ini'.", at.c_str());
+        error("Invalid file extension of '" << at << "'expected '.ini'.");
 
     std::string src = read_from_file(at);
     Tokens tkns = lex(src);
@@ -144,7 +144,7 @@ Object read(std::string at) {
         case Type::SECTION: {
             std::string name = tkns[cur].data;
             if (!sec.add_section(name)) 
-                error("Cannot insert '%s' section.", name.c_str());
+                error("Cannot insert '" << name << "' section.");
 
             sec = sec.get_section(name);
             // eating the section declaration.
@@ -155,15 +155,15 @@ Object read(std::string at) {
             // eating property name.
             cur++;
             if (cur < tkns.size() && !(tkns[cur].type == Type::SEPARATOR))
-                error("Missing separator for property '%s'.", name.c_str());
+                error("Missing separator for property '" << name << "'.");
             // eating the separator.
             cur++;
             if (cur >= tkns.size()) 
-                error("Unfinished property definition.", NULL);
+                error("Unfinished property '" << name << "' definition.\n");
 
             std::string value = tkns[cur].data;
             if (!sec.add_prop(name, value)) 
-                error("Cannot insert property '%s'.", name.c_str());
+                error("Cannot insert property '" << name << "'.");
             // eating property value.
             cur++;
         } break;
@@ -176,6 +176,6 @@ Object read(std::string at) {
     return obj;
 }
 
-bool write(Object &obj, char separator) {
+bool mini::write(mini::Object &obj, char separator) {
     return false;
 }

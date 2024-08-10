@@ -1,6 +1,8 @@
-#include <iostream>
+#include "mini.h"
+
+using namespace mini;
 
 int main(void) {
-    std::cout << "Hello, world\n";
+    Object config = read("resources/config.ini");
     return 0;
 }
