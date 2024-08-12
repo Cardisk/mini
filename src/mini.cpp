@@ -3,6 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <utility>
 
 #define error(format) do { std::cerr << format, exit(1); } while(0)
@@ -28,15 +29,15 @@ namespace {
         std::ifstream file(file_path);
         if (!file.is_open()) 
             error("Could not open '" << file_path << "': " << strerror(errno) << "\n");
-        std::string src;
-        file >> src;
-        return src;
+        std::stringstream buf;
+        buf << file.rdbuf();
+        return buf.str();
     }
 
     Tokens lex(std::string src) {
         Tokens tkns;
         size_t cur = 0;
-        while (cur < src.size() && src[cur] != src.back()) {
+        while (cur < src.size()) {
             if (src[cur] == '\n' || src[cur] == ' ') {
                 // TODO: maybe handle token position?
                 cur++;
@@ -131,22 +132,29 @@ mini::Object mini::read(std::string at) {
     std::string src = read_from_file(at);
     Tokens tkns = lex(src);
 
+    // TODO: remove this debug code.
+    /* for (Token t : tkns) { */
+    /*     std::cout << t.type << std::endl; */
+    /*     std::cout << t.data << std::endl; */
+    /*     std::cout << std::endl; */
+    /* } */
+
     Object obj { 
         .file_path = at,
         .global = Section(),
     };
 
-    Section &sec = obj.global;
+    Section *sec = &obj.global;
 
     size_t cur = 0;
     while (cur < tkns.size()) {
         switch (tkns[cur].type) {
         case Type::SECTION: {
             std::string name = tkns[cur].data;
-            if (!sec.add_section(name)) 
+            if (!sec->add_section(name)) 
                 error("Cannot insert '" << name << "' section.");
 
-            sec = sec.get_section(name);
+            sec = &sec->get_section(name);
             // eating the section declaration.
             cur++;
         } break;
@@ -159,10 +167,10 @@ mini::Object mini::read(std::string at) {
             // eating the separator.
             cur++;
             if (cur >= tkns.size()) 
-                error("Unfinished property '" << name << "' definition.\n");
+                error("Unfinished property '" << name << "' definition, EOF.\n");
 
             std::string value = tkns[cur].data;
-            if (!sec.add_prop(name, value)) 
+            if (!sec->add_prop(name, value)) 
                 error("Cannot insert property '" << name << "'.");
             // eating property value.
             cur++;
