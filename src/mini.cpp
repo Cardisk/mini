@@ -54,7 +54,7 @@ namespace {
                     .type = Type::SECTION,
                     .data = src.substr(start, cur - start),
                 };
-                
+
                 // eating ']'.
                 cur++;
                 tkns.emplace_back(t);
@@ -96,12 +96,15 @@ namespace {
             while (cur < src.size() && 
                     src[cur] != ' ' && 
                     src[cur] != ':' && 
-                    src[cur] != '=') cur++;
+                    src[cur] != '=' &&
+                    src[cur] != '[') cur++;
 
             Token t = {
                 .type = Type::IDENTIFIER,
                 .data = src.substr(start, cur - start),
             };
+
+            t.data.erase(std::remove_if(t.data.begin(), t.data.end(), ::isspace), t.data.end());
 
             tkns.emplace_back(t);
         }
@@ -133,11 +136,12 @@ mini::Object mini::read(std::string at) {
     Tokens tkns = lex(src);
 
     // TODO: remove this debug code.
-    /* for (Token t : tkns) { */
-    /*     std::cout << t.type << std::endl; */
-    /*     std::cout << t.data << std::endl; */
-    /*     std::cout << std::endl; */
-    /* } */
+    for (Token t : tkns) {
+        std::cout << "----------" << std::endl;
+        std::cout << t.type << std::endl;
+        std::cout << t.data << std::endl;
+        std::cout << "----------" << std::endl;
+    }
 
     Object obj { 
         .file_path = at,
@@ -151,7 +155,16 @@ mini::Object mini::read(std::string at) {
         switch (tkns[cur].type) {
         case Type::SECTION: {
             std::string name = tkns[cur].data;
-            if (!sec->add_section(name)) 
+
+            bool failed = false;
+            if (name.starts_with(".")) {
+                name.erase(0, 1);
+                if (!sec->add_section(name))
+                    failed = true;
+            }
+            else if (!obj.global.add_section(name)) failed = true;
+
+            if (failed)
                 error("Cannot insert '" << name << "' section.");
 
             sec = &sec->get_section(name);
