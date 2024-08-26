@@ -29,7 +29,20 @@ namespace mini {
         Sections sections;
     };
 
-    struct Object {
+    class Object {
+    public:
+        explicit Object(std::string path = ""): file_path(std::move(path)), 
+                                                global(Section()) {}
+
+        std::string &get_file_path() { return this->file_path; }
+        void set_file_path(std::string file_path) { this->file_path = file_path; }
+
+        Section &get_global() { return this->global; }
+
+        std::string &get_prop_from_path(std::string path, char separator = '/');
+        Section &get_section_from_path(std::string path, char separator = '/');
+
+    private:
         std::string file_path;
         Section global;
     };

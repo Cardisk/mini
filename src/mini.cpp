@@ -5,6 +5,8 @@
 #include <fstream>
 #include <sstream>
 #include <utility>
+#include <string>
+#include <vector>
 
 #define error(format) do { std::cerr << format, exit(1); } while(0)
 
@@ -112,6 +114,17 @@ namespace {
     }
 }
 
+std::vector<std::string> split_from_separator(std::string input, char separator) {
+    std::vector<std::string> vec;
+
+    std::stringstream stream(input);
+    std::string str;
+    while(std::getline(stream, str, separator)) 
+        vec.push_back(str);
+
+    return vec;
+}
+
 bool mini::Section::add_section(std::string name) {
     return this->sections.insert(std::make_pair(name, Section(name))).second;
 }
@@ -128,6 +141,34 @@ std::string &mini::Section::get_prop(std::string name) {
     return this->props.at(name);
 }
 
+std::string &mini::Object::get_prop_from_path(std::string path, char separator) {
+    auto vpath = split_from_separator(path, separator);
+    if (vpath.size() < 1) 
+        error("Invalid search path provided.");
+
+    Section *sec = &this->global;
+    while (vpath.size() > 1) {
+        sec = &sec->get_section(vpath.at(0));
+        vpath.erase(vpath.begin());
+    }
+
+    return sec->get_prop(vpath.at(0));
+}
+
+mini::Section &mini::Object::get_section_from_path(std::string path, char separator) {
+    auto vpath = split_from_separator(path, separator);
+    if (vpath.size() < 1) 
+        return this->global;
+
+    Section *sec = &this->global;
+    while (vpath.size() > 1) {
+        sec = &sec->get_section(vpath.at(0));
+        vpath.erase(vpath.begin());
+    }
+
+    return sec->get_section(vpath.at(0));
+}
+
 mini::Object mini::read(std::string at) {
     if (!at.ends_with(".ini"))
         error("Invalid file extension of '" << at << "'expected '.ini'.");
@@ -136,19 +177,15 @@ mini::Object mini::read(std::string at) {
     Tokens tkns = lex(src);
 
     // TODO: remove this debug code.
-    for (Token t : tkns) {
-        std::cout << "----------" << std::endl;
-        std::cout << t.type << std::endl;
-        std::cout << t.data << std::endl;
-        std::cout << "----------" << std::endl;
-    }
+    /* for (Token t : tkns) { */
+    /*     std::cout << "----------" << std::endl; */
+    /*     std::cout << t.type << std::endl; */
+    /*     std::cout << t.data << std::endl; */
+    /*     std::cout << "----------" << std::endl; */
+    /* } */
 
-    Object obj { 
-        .file_path = at,
-        .global = Section(),
-    };
-
-    Section *sec = &obj.global;
+    Object obj = Object(at);
+    Section *sec = &obj.get_section_from_path("");
 
     size_t cur = 0;
     while (cur < tkns.size()) {
@@ -162,7 +199,7 @@ mini::Object mini::read(std::string at) {
                 if (!sec->add_section(name))
                     failed = true;
             }
-            else if (!obj.global.add_section(name)) failed = true;
+            else if (!obj.get_global().add_section(name)) failed = true;
 
             if (failed)
                 error("Cannot insert '" << name << "' section.");
