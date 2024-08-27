@@ -18,6 +18,9 @@ namespace mini {
         std::string &get_name() { return this->name; }
         void set_name(std::string name) { this->name = name; }
 
+        Props &get_props() { return this->props; }
+        Sections &get_sections() { return this->sections; }
+
         bool add_prop(std::string name, std::string val);
         std::string &get_prop(std::string name);
         
@@ -40,7 +43,7 @@ namespace mini {
         Section &get_global() { return this->global; }
 
         std::string &get_prop_from_path(std::string path, char separator = '/');
-        Section &get_section_from_path(std::string path, char separator = '/');
+        Section &get_section_from_path(std::string path = "", char separator = '/');
 
     private:
         std::string file_path;
@@ -48,5 +51,5 @@ namespace mini {
     };
 
     Object read(std::string at);
-    bool write(Object &obj, char separator);
+    void write(Object &obj, char separator);
 }

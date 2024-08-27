@@ -97,6 +97,7 @@ namespace {
 
             while (cur < src.size() && 
                     src[cur] != ' ' && 
+                    src[cur] != '\n' && 
                     src[cur] != ':' && 
                     src[cur] != '=' &&
                     src[cur] != '[') cur++;
@@ -143,23 +144,28 @@ std::string &mini::Section::get_prop(std::string name) {
 
 std::string &mini::Object::get_prop_from_path(std::string path, char separator) {
     auto vpath = split_from_separator(path, separator);
+    // by default at least one word needs to be provided.
     if (vpath.size() < 1) 
         error("Invalid search path provided.");
 
+    // pointing to the correct section.
     Section *sec = &this->global;
     while (vpath.size() > 1) {
         sec = &sec->get_section(vpath.at(0));
         vpath.erase(vpath.begin());
     }
 
+    // treating the last as the property name.
     return sec->get_prop(vpath.at(0));
 }
 
 mini::Section &mini::Object::get_section_from_path(std::string path, char separator) {
     auto vpath = split_from_separator(path, separator);
+    // by default use the global one.
     if (vpath.size() < 1) 
         return this->global;
 
+    // searching the section.
     Section *sec = &this->global;
     while (vpath.size() > 1) {
         sec = &sec->get_section(vpath.at(0));
@@ -185,7 +191,7 @@ mini::Object mini::read(std::string at) {
     /* } */
 
     Object obj = Object(at);
-    Section *sec = &obj.get_section_from_path("");
+    Section *sec = &obj.get_global();
 
     size_t cur = 0;
     while (cur < tkns.size()) {
@@ -195,16 +201,34 @@ mini::Object mini::read(std::string at) {
 
             bool failed = false;
             if (name.starts_with(".")) {
+                if (sec->get_name() == "global")
+                    error("Cannot have dynamic subsectioning at top level scope.");
+
                 name.erase(0, 1);
                 if (!sec->add_section(name))
                     failed = true;
-            }
-            else if (!obj.get_global().add_section(name)) failed = true;
 
+                sec = &sec->get_section(name);
+            }
+            else if (name.find(".") != std::string::npos) {
+                auto path = split_from_separator(name, '.');
+                std::stringstream joined;
+                for (auto i = 0; i < path.size() - 1; i++) {
+                    if (i != 0) joined << "/";
+                    if (path.at(i).empty())
+                        error("Cannot provide empty section names inside '" << name << "' path.");
+                    joined << path.at(i);
+                }
+                if (!obj.get_section_from_path(joined.str()).add_section(path.back())) failed = true;
+                sec = &obj.get_section_from_path(joined.str()).get_section(path.back());
+            } 
+            else {
+                if (!obj.get_global().add_section(name)) failed = true;
+                sec = &obj.get_section_from_path(name);
+            }
             if (failed)
                 error("Cannot insert '" << name << "' section.");
 
-            sec = &sec->get_section(name);
             // eating the section declaration.
             cur++;
         } break;
@@ -234,6 +258,24 @@ mini::Object mini::read(std::string at) {
     return obj;
 }
 
-bool mini::write(mini::Object &obj, char separator) {
-    return false;
+void mini::write(mini::Object &obj, char separator) {
+    std::ofstream ini(obj.get_file_path());
+    if (!ini.is_open())
+        error("Unable to open '" << obj.get_file_path() << "'.");
+
+    std::stringstream content;
+    
+    Section *s = &obj.get_global();
+    while (!s->get_sections().empty()) {
+        auto name = s->get_name();
+        if (name != "global")
+            content << "[" << name << "]";
+
+        for (auto pair : s->get_props()) {
+            content << pair.first;
+            content << " " << separator << " ";
+            content << pair.second;
+            content << std::endl;
+        }
+    }
 }
