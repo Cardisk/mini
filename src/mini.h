@@ -13,10 +13,14 @@ namespace mini {
 
     class Section {
     public:
-        explicit Section(std::string name = "global"): name(std::move(name)) {}
+        explicit Section(std::string name = "global", std::string path = ""): name(std::move(name)),
+                                                                              path(std::move(path)) {}
 
         std::string &get_name() { return this->name; }
         void set_name(std::string name) { this->name = name; }
+        
+        std::string &get_path() { return this->path; }
+        void set_path(std::string path) { this->path = path; }
 
         Props &get_props() { return this->props; }
         Sections &get_sections() { return this->sections; }
@@ -28,6 +32,7 @@ namespace mini {
         Section &get_section(std::string name);
     private:
         std::string name;
+        std::string path;
         Props props;
         Sections sections;
     };
@@ -51,5 +56,5 @@ namespace mini {
     };
 
     Object read(std::string at);
-    void write(Object &obj, char separator);
+    void write(Object &obj, char separator = '=');
 }

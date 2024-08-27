@@ -8,6 +8,10 @@
 #include <string>
 #include <vector>
 
+// TODO: unhardcode section path separator here as well.
+// ini standard says that the path is separated by '.',
+// but maybe it's a good idea to make it customizable.
+
 #define error(format) do { std::cerr << format, exit(1); } while(0)
 
 #define UNREACHABLE error("Technically reaching this branch is impossible.")
@@ -113,21 +117,45 @@ namespace {
         }
         return tkns;
     }
-}
 
-std::vector<std::string> split_from_separator(std::string input, char separator) {
-    std::vector<std::string> vec;
+    std::vector<std::string> split_from_separator(std::string input, char separator) {
+        std::vector<std::string> vec;
 
-    std::stringstream stream(input);
-    std::string str;
-    while(std::getline(stream, str, separator)) 
-        vec.push_back(str);
+        std::stringstream stream(input);
+        std::string str;
+        while(std::getline(stream, str, separator)) 
+            vec.push_back(str);
 
-    return vec;
+        return vec;
+    }
+
+    std::stringstream section_to_string(mini::Section &sec, char separator) {
+        std::stringstream txt;
+        // FIXME: unhardcode path separator.
+        if (sec.get_name() != "global")
+            txt << "[" << sec.get_path() << "." << sec.get_name() << "]" << std::endl;
+
+        for (auto pair : sec.get_props()) {
+            txt << pair.first;
+            txt << " " << separator << " ";
+            txt << pair.second << std::endl;
+        }
+
+        txt << std::endl;
+
+        for (auto pair : sec.get_sections()) {
+            txt << section_to_string(pair.second, separator).str();
+            txt << std::endl;
+        }
+        
+        return txt;
+    }
 }
 
 bool mini::Section::add_section(std::string name) {
-    return this->sections.insert(std::make_pair(name, Section(name))).second;
+    std::string path = "";
+    if (this->name != "global") path = this->path + "." + this->name;
+    return this->sections.insert(std::make_pair(name, Section(name, path))).second;
 }
 
 mini::Section &mini::Section::get_section(std::string name) {
@@ -194,12 +222,14 @@ mini::Object mini::read(std::string at) {
     Section *sec = &obj.get_global();
 
     size_t cur = 0;
+    // FIXME: unhardcode section path separator.
     while (cur < tkns.size()) {
         switch (tkns[cur].type) {
         case Type::SECTION: {
             std::string name = tkns[cur].data;
 
             bool failed = false;
+            // dynamic subsectioning.
             if (name.starts_with(".")) {
                 if (sec->get_name() == "global")
                     error("Cannot have dynamic subsectioning at top level scope.");
@@ -210,6 +240,7 @@ mini::Object mini::read(std::string at) {
 
                 sec = &sec->get_section(name);
             }
+            // subsectioning with absolute path.
             else if (name.find(".") != std::string::npos) {
                 auto path = split_from_separator(name, '.');
                 std::stringstream joined;
@@ -221,7 +252,8 @@ mini::Object mini::read(std::string at) {
                 }
                 if (!obj.get_section_from_path(joined.str()).add_section(path.back())) failed = true;
                 sec = &obj.get_section_from_path(joined.str()).get_section(path.back());
-            } 
+            }
+            // top level section definition.
             else {
                 if (!obj.get_global().add_section(name)) failed = true;
                 sec = &obj.get_section_from_path(name);
@@ -263,19 +295,7 @@ void mini::write(mini::Object &obj, char separator) {
     if (!ini.is_open())
         error("Unable to open '" << obj.get_file_path() << "'.");
 
-    std::stringstream content;
+    std::stringstream content = section_to_string(obj.get_global(), separator);
     
-    Section *s = &obj.get_global();
-    while (!s->get_sections().empty()) {
-        auto name = s->get_name();
-        if (name != "global")
-            content << "[" << name << "]";
-
-        for (auto pair : s->get_props()) {
-            content << pair.first;
-            content << " " << separator << " ";
-            content << pair.second;
-            content << std::endl;
-        }
-    }
+    ini << content.rdbuf();
 }
