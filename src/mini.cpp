@@ -132,8 +132,12 @@ namespace {
     std::stringstream section_to_string(mini::Section &sec, char separator) {
         std::stringstream txt;
         // FIXME: unhardcode path separator.
-        if (sec.get_name() != "global")
-            txt << "[" << sec.get_path() << "." << sec.get_name() << "]" << std::endl;
+        if (sec.get_name() != "global") {
+            std::string path = sec.get_path();
+            if (!path.empty()) path += ".";
+            path += sec.get_name();
+            txt << "[" << path << "]" << std::endl;
+        }
 
         for (auto pair : sec.get_props()) {
             txt << pair.first;

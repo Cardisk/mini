@@ -14,5 +14,8 @@ int main(void) {
     std::cout << config.get_global().get_section("subsection").get_section("subsubsection").get_name() << " under subsection" << std::endl;
     std::cout << config.get_prop_from_path("subsection/foo/test3") << std::endl;
     std::cout << config.get_prop_from_path("subsection/foo/test4") << std::endl;
+
+    config.set_file_path("resources/runtime.ini");
+    write(config);
     return 0;
 }
