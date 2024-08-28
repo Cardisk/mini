@@ -1,0 +1,48 @@
+# mINI
+
+An easy to use parser for ini files.
+
+## Quick start
+
+Reading an existing file:
+
+```c++
+#include <iostream>
+#include "mini.h"
+
+// Optional.
+using namespace mini;
+
+int main(void) {
+    Object file = read("path/to/file.ini");
+
+    std::cout << file.get_prop_from_path("path/to/property"); 
+    return 0;
+}
+```
+
+`get_prop_from_path()` accepts a string with the path to the property separated by default (but customizable) by '/' assuming the last word as the property name.
+
+`get_section_from_path()` does the same thing but returns a reference to the desired section.
+
+Writing to a file:
+
+```c++
+#include <iostream>
+#include "mini.h"
+
+// Optional.
+using namespace mini;
+
+int main(void) {
+    Object file = Object("path/to/the/new/file.ini");
+
+    file.get_global().add_prop("name", "value");
+    file.get_global().add_section("name");
+    file.get_section_from_path("name").add_prop("name", "value");
+
+    write(file);
+    return 0;
+}
+```
+
