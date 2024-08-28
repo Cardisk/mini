@@ -147,18 +147,20 @@ namespace {
 
         txt << std::endl;
 
-        for (auto pair : sec.get_sections()) {
+        for (auto pair : sec.get_sections())
             txt << section_to_string(pair.second, separator).str();
-            txt << std::endl;
-        }
-        
+
         return txt;
     }
 }
 
 bool mini::Section::add_section(std::string name) {
     std::string path = "";
-    if (this->name != "global") path = this->path + "." + this->name;
+    if (this->name != "global") {
+        if (!this->path.empty()) path += this->path + ".";
+        path += this->name;
+    }
+
     return this->sections.insert(std::make_pair(name, Section(name, path))).second;
 }
 
