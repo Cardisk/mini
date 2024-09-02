@@ -12,6 +12,8 @@
 // ini standard says that the path is separated by '.',
 // but maybe it's a good idea to make it customizable.
 
+// FIXME: throw an exception instead of crashing.
+
 #define error(format) do { std::cerr << format, exit(1); } while(0)
 
 #define UNREACHABLE error("Technically reaching this branch is impossible.")
