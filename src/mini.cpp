@@ -298,12 +298,15 @@ mini::Object mini::read(std::string at) {
     return obj;
 }
 
-void mini::write(mini::Object &obj, char separator) {
+bool mini::write(mini::Object &obj, char separator) {
     std::ofstream ini(obj.get_file_path());
-    if (!ini.is_open())
+    if (!ini.is_open()) {
         error("Unable to open '" << obj.get_file_path() << "'.");
+        return false;
+    }
 
     std::stringstream content = section_to_string(obj.get_global(), separator);
     
     ini << content.rdbuf();
+    return true;
 }
