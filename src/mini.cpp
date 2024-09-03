@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
-// TODO: unhardcode section path separator here as well.
+// ISSUE(#2): unhardcode section path separator here as well.
 // ini standard says that the path is separated by '.',
 // but maybe it's a good idea to make it customizable.
 
-// FIXME: throw an exception instead of crashing.
+// ISSUE(#3): throw an exception instead of crashing.
 
 #define error(format) do { std::cerr << format, exit(1); } while(0)
 
@@ -47,7 +47,7 @@ namespace {
         size_t cur = 0;
         while (cur < src.size()) {
             if (src[cur] == '\n' || src[cur] == ' ') {
-                // TODO: maybe handle token position?
+                // ISSUE(#4): maybe handle token position?
                 cur++;
                 continue;
             }
@@ -133,7 +133,7 @@ namespace {
 
     std::stringstream section_to_string(mini::Section &sec, char separator) {
         std::stringstream txt;
-        // FIXME: unhardcode path separator.
+        // ISSUE(#5): unhardcode path separator.
         if (sec.get_name() != "global") {
             std::string path = sec.get_path();
             if (!path.empty()) path += ".";
@@ -230,7 +230,7 @@ mini::Object mini::read(std::string at) {
     Section *sec = &obj.get_global();
 
     size_t cur = 0;
-    // FIXME: unhardcode section path separator.
+    // ISSUE(#6): unhardcode section path separator.
     while (cur < tkns.size()) {
         switch (tkns[cur].type) {
         case Type::SECTION: {
