@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(GOOGLETEST_VERSION 1.13.0)
 
 set(LIB ../src/mini.h ../src/mini.cpp)
-set(TEST objectConstructionTest.cpp sectionInsertionTest.cpp)
+set(TEST objectConstructionTest.cpp sectionInsertionTest.cpp readWriteTest.cpp)
 
 add_subdirectory(./lib/googletest)
 set(gtest_SOURCE_DIR, ./lib/googletest/googletest)
