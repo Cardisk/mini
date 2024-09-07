@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 #include <utility>
 #include <string>
 #include <vector>
@@ -38,8 +39,14 @@ namespace {
     Tokens lex(std::string src) {
         Tokens tkns;
         size_t cur = 0;
+        size_t line = 1;
         while (cur < src.size()) {
-            if (src[cur] == '\n' || src[cur] == ' ') {
+            if (src[cur] == '\n') {
+                line++;
+                cur++;
+            }
+
+            if (src[cur] == ' ') {
                 // ISSUE(#4): maybe handle token position?
                 cur++;
                 continue;
@@ -57,7 +64,14 @@ namespace {
                 };
 
                 // eating ']'.
+                if (src[cur] != ']') {
+                    std::string msg = "Missing closing parenthesis for section definition at line ";
+                    msg += line;
+                    msg += ".";
+                    throw new std::runtime_error(msg);
+                }
                 cur++;
+
                 tkns.emplace_back(t);
                 continue;
             }
@@ -87,7 +101,14 @@ namespace {
                 };
                 
                 // eating '"'.
+                if (src[cur] != '"') {
+                    std::string msg = "Missing closing double quote at line ";
+                    msg += line;
+                    msg += ".";
+                    throw new std::runtime_error(msg);
+                }
                 cur++;
+
                 tkns.emplace_back(t);
                 continue;
             }
