@@ -56,6 +56,5 @@ namespace mini {
     };
 
     Object read(std::string at);
-    // ISSUE(#1): consider changing the return type to boolean for write function.
     bool write(Object &obj, char separator = '=');
 }

@@ -12,7 +12,12 @@ TEST(ReadWrite, WritingTest) {
     ASSERT_EQ(true, result);
     result = obj.get_section_from_path("subsection").add_prop("testRuntime2", "value_for_testRuntime_2");
     ASSERT_EQ(true, result);
-    mini::write(obj);
+    result = obj.get_section_from_path("subsection").add_section("subsubsection");
+    ASSERT_EQ(true, result);
+    result = obj.get_section_from_path("subsection/subsubsection").add_prop("testRuntime3", "value_for_testRuntime_3");
+    ASSERT_EQ(true, result);
+    result = mini::write(obj);
+    ASSERT_EQ(true, result);
 }
 
 TEST(ReadWrite, ReadingTest) {
