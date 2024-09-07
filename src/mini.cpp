@@ -8,10 +8,6 @@
 #include <string>
 #include <vector>
 
-// ISSUE(#2): unhardcode section path separator here as well.
-// ini standard says that the path is separated by '.',
-// but maybe it's a good idea to make it customizable.
-
 // ISSUE(#3): throw an exception instead of crashing.
 
 #define error(format) do { std::cerr << format, exit(1); } while(0)
@@ -133,7 +129,6 @@ namespace {
 
     std::stringstream section_to_string(mini::Section &sec, char separator) {
         std::stringstream txt;
-        // ISSUE(#5): unhardcode path separator.
         if (sec.get_name() != "global") {
             std::string path = sec.get_path();
             if (!path.empty()) path += ".";
@@ -212,25 +207,13 @@ mini::Section &mini::Object::get_section_from_path(std::string path, char separa
 }
 
 mini::Object mini::read(std::string at) {
-    if (!at.ends_with(".ini"))
-        error("Invalid file extension of '" << at << "'expected '.ini'.");
-
     std::string src = read_from_file(at);
     Tokens tkns = lex(src);
-
-    // TODO: remove this debug code.
-    /* for (Token t : tkns) { */
-    /*     std::cout << "----------" << std::endl; */
-    /*     std::cout << t.type << std::endl; */
-    /*     std::cout << t.data << std::endl; */
-    /*     std::cout << "----------" << std::endl; */
-    /* } */
 
     Object obj = Object(at);
     Section *sec = &obj.get_global();
 
     size_t cur = 0;
-    // ISSUE(#6): unhardcode section path separator.
     while (cur < tkns.size()) {
         switch (tkns[cur].type) {
         case Type::SECTION: {

@@ -7,17 +7,17 @@ TEST(ReadWrite, WritingTest) {
     // change here if something is not going to work.
     mini::Object obj("resources/testRuntime.ini");
     bool result = obj.get_global().add_prop("testRuntime1", "value_for_testRuntime_1");
-    ASSERT_EQ(true, result);
+    EXPECT_TRUE(result);
     result = obj.get_global().add_section("subsection");
-    ASSERT_EQ(true, result);
+    EXPECT_TRUE(result);
     result = obj.get_section_from_path("subsection").add_prop("testRuntime2", "value_for_testRuntime_2");
-    ASSERT_EQ(true, result);
+    EXPECT_TRUE(result);
     result = obj.get_section_from_path("subsection").add_section("subsubsection");
-    ASSERT_EQ(true, result);
+    EXPECT_TRUE(result);
     result = obj.get_section_from_path("subsection/subsubsection").add_prop("testRuntime3", "value_for_testRuntime_3");
-    ASSERT_EQ(true, result);
+    EXPECT_TRUE(result);
     result = mini::write(obj);
-    ASSERT_EQ(true, result);
+    EXPECT_TRUE(result);
 }
 
 TEST(ReadWrite, ReadingTest) {

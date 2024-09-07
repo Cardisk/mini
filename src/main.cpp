@@ -5,6 +5,8 @@
 using namespace mini;
 
 int main(void) {
+    // the path is viewed from the root of the project.
+    // change here if something is not going to work.
     Object config = read("resources/config.ini");
     std::cout << config.get_prop_from_path("test1") << std::endl;
     std::cout << config.get_global().get_prop("test1") << std::endl;
