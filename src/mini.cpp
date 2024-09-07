@@ -8,11 +8,7 @@
 #include <string>
 #include <vector>
 
-// ISSUE(#3): throw an exception instead of crashing.
-
-#define error(format) do { std::cerr << format, exit(1); } while(0)
-
-#define UNREACHABLE error("Technically reaching this branch is impossible.")
+#define UNREACHABLE do { std::cerr << "Technically reaching this branch is impossible.", exit(1); } while(0)
 
 namespace {
     enum Type {
@@ -32,7 +28,8 @@ namespace {
     std::string read_from_file(std::string file_path) {
         std::ifstream file(file_path);
         if (!file.is_open()) 
-            error("Could not open '" << file_path << "': " << strerror(errno) << "\n");
+            throw new std::runtime_error("Could not open '" + file_path + "': " + strerror(errno) + "\n");
+        
         std::stringstream buf;
         buf << file.rdbuf();
         return buf.str();
@@ -177,7 +174,7 @@ std::string &mini::Object::get_prop_from_path(std::string path, char separator) 
     auto vpath = split_from_separator(path, separator);
     // by default at least one word needs to be provided.
     if (vpath.size() < 1) 
-        error("Invalid search path provided.");
+        throw new std::runtime_error("Invalid search path provided. At least one word is expected.");
 
     // pointing to the correct section.
     Section *sec = &this->global;
@@ -223,7 +220,7 @@ mini::Object mini::read(std::string at) {
             // dynamic subsectioning.
             if (name.starts_with(".")) {
                 if (sec->get_name() == "global")
-                    error("Cannot have dynamic subsectioning at top level scope.");
+                    throw new std::runtime_error("Cannot have dynamic subsectioning at top level scope.");
 
                 name.erase(0, 1);
                 if (!sec->add_section(name))
@@ -238,7 +235,7 @@ mini::Object mini::read(std::string at) {
                 for (auto i = 0; i < path.size() - 1; i++) {
                     if (i != 0) joined << "/";
                     if (path.at(i).empty())
-                        error("Cannot provide empty section names inside '" << name << "' path.");
+                        throw new std::runtime_error("Cannot provide empty section names inside '" + name + "' path.");
                     joined << path.at(i);
                 }
                 if (!obj.get_section_from_path(joined.str()).add_section(path.back())) failed = true;
@@ -250,7 +247,7 @@ mini::Object mini::read(std::string at) {
                 sec = &obj.get_section_from_path(name);
             }
             if (failed)
-                error("Cannot insert '" << name << "' section.");
+                throw new std::runtime_error("Cannot insert '" + name + "' section: " + strerror(errno));
 
             // eating the section declaration.
             cur++;
@@ -260,15 +257,15 @@ mini::Object mini::read(std::string at) {
             // eating property name.
             cur++;
             if (cur < tkns.size() && !(tkns[cur].type == Type::SEPARATOR))
-                error("Missing separator for property '" << name << "'.");
+                throw new std::runtime_error("Missing separator for property '" + name + "'.");
             // eating the separator.
             cur++;
             if (cur >= tkns.size()) 
-                error("Unfinished property '" << name << "' definition, EOF.\n");
+                throw new std::runtime_error("Unfinished property '" + name + "' definition, EOF.\n");
 
             std::string value = tkns[cur].data;
             if (!sec->add_prop(name, value)) 
-                error("Cannot insert property '" << name << "'.");
+                throw new std::runtime_error("Cannot insert property '" + name + "': " + strerror(errno));
             // eating property value.
             cur++;
         } break;
@@ -283,10 +280,8 @@ mini::Object mini::read(std::string at) {
 
 bool mini::write(mini::Object &obj, char separator) {
     std::ofstream ini(obj.get_file_path());
-    if (!ini.is_open()) {
-        error("Unable to open '" << obj.get_file_path() << "'.");
-        return false;
-    }
+    if (!ini.is_open())
+        throw new std::runtime_error("Could not open '" + obj.get_file_path() + "': " + strerror(errno) + "\n");
 
     std::stringstream content = section_to_string(obj.get_global(), separator);
     
