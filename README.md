@@ -6,7 +6,7 @@ An easy to use parser for ini files.
 
 With `googletest` being a submodule, to correctly fetch everything run:
 
-```shell
+```bash
 git clone --recurse-submodules <url>
 ```
 
@@ -14,7 +14,7 @@ git clone --recurse-submodules <url>
 
 Reading an existing file:
 
-```c++
+```cpp
 #include <iostream>
 #include "mini.h"
 
@@ -35,7 +35,7 @@ int main(void) {
 
 Writing to a file:
 
-```c++
+```cpp
 #include <iostream>
 #include "mini.h"
 
