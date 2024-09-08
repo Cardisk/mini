@@ -1,3 +1,5 @@
+![mini logo](https://github.com/cardisk/mini/blob/images/mini.svg)
+
 # mINI
 
 An easy to use parser for ini files.
