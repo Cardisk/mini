@@ -42,7 +42,7 @@
      inkscape:highlight-color="#aaaaaa">
     <text
        xml:space="preserve"
-       style="font-size:22.7891px;line-height:0px;font-family:Damascus;-inkscape-font-specification:Damascus;letter-spacing:-15px;stroke:#d47f3e;stroke-width:4.8;stroke-dasharray:none;stroke-opacity:1"
+       style="font-size:22.7891px;line-height:0px;font-family:Damascus;-inkscape-font-specification:Damascus;letter-spacing:-15px;stroke:#d47f3e;stroke-width:5;stroke-dasharray:none;stroke-opacity:1"
        x="22.601231"
        y="310.37585"
        id="text5"
@@ -51,10 +51,10 @@
          id="tspan5"
          x="22.601231"
          y="310.37585"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:213.333px;line-height:0px;font-family:Silom;-inkscape-font-specification:'Silom, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:-15px;stroke:#d47f3e;stroke-width:4.8;stroke-dasharray:none;stroke-opacity:1"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:213.333px;line-height:0px;font-family:Silom;-inkscape-font-specification:'Silom, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:-15px;fill:#ff9955;stroke:#000000;stroke-width:4.8;stroke-dasharray:none;stroke-opacity:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:213.333px;line-height:0px;font-family:Silom;-inkscape-font-specification:'Silom, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:-15px;stroke:#d47f3e;stroke-width:5;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:213.333px;line-height:0px;font-family:Silom;-inkscape-font-specification:'Silom, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:-15px;fill:#ff9955;stroke:#000000;stroke-width:5;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
            id="tspan6">m</tspan><tspan
-           style="stroke:#ff9a57;stroke-opacity:1"
+           style="stroke:#ff9a57;stroke-width:5;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
            id="tspan2">INI</tspan></tspan></text>
   </g>
 </svg>
