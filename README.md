@@ -17,12 +17,12 @@ to bootstrap the repository, or  lazily you can just type `make` inside the
 parent directory and it will prepare everything by itself.
 
 Makefile targets:
-- all: compiles both the example and test
-- example: compiles only the example part
-- test: compiles only the test part
-- run_example: runs the example
-- run_test: runs the tests
-- clean: removes the build directories
+- _**all**_: compiles both the example and test
+- _**example**_: compiles only the example part
+- _**test**_: compiles only the test part
+- _**run_example**_: runs the example
+- _**run_test**_: runs the tests
+- _**clean**_: removes the build directories
 
 ## Quick start
 
