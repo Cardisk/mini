@@ -2,6 +2,14 @@
 
 An easy to use parser for ini files.
 
+## Cloning
+
+With `googletest` being a submodule, to correctly fetch everything run:
+
+```shell
+git clone --recurse-submodules <url>
+```
+
 ## Quick start
 
 Reading an existing file:
