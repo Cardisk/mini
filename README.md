@@ -10,6 +10,20 @@ An easy to use parser for ini files.
 >git clone --recurse-submodules <url>
 >```
 
+## Building
+
+This project uses `cmake` build system. You can write manually all the commands
+to bootstrap the repository, or  lazily you can just type `make` inside the
+parent directory and it will prepare everything by itself.
+
+Makefile targets:
+- all: compiles both the example and test
+- example: compiles only the example part
+- test: compiles only the test part
+- run_example: runs the example
+- run_test: runs the tests
+- clean: removes the build directories
+
 ## Quick start
 
 Reading an existing file:
@@ -28,10 +42,6 @@ int main(void) {
     return 0;
 }
 ```
-
-`get_prop_from_path()` accepts a string with the path to the property separated by default (but customizable) by '/' assuming the last word as the property name.
-
-`get_section_from_path()` does the same thing but returns a reference to the desired section.
 
 Writing to a file:
 
@@ -54,3 +64,8 @@ int main(void) {
 }
 ```
 
+`get_prop_from_path`: retrieves the property by searching inside the path
+provided. By default the separator is '/' but it's customizable.
+
+`get_section_from_path`: retrieves the sections (as a reference) by searching
+inside the path provided. By default the separator is '/' but it's customizable.
