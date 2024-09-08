@@ -20,4 +20,4 @@ run_test: btest/miniTest
 
 clean:
 	rm -rf build
-	rm -rf test
+	rm -rf btest
