@@ -56,5 +56,5 @@ namespace mini {
     };
 
     Object read(std::string at);
-    bool write(Object &obj, char separator = '=');
+    void write(Object &obj, char separator = '=');
 }

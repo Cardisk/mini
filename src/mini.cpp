@@ -306,7 +306,7 @@ mini::Object mini::read(std::string at) {
     return obj;
 }
 
-bool mini::write(mini::Object &obj, char separator) {
+void mini::write(mini::Object &obj, char separator) {
     std::ofstream ini(obj.get_file_path());
     if (!ini.is_open())
         throw std::runtime_error("Could not open '" + obj.get_file_path() + "': " + strerror(errno) + "\n");
@@ -314,5 +314,4 @@ bool mini::write(mini::Object &obj, char separator) {
     std::stringstream content = section_to_string(obj.get_global(), separator);
     
     ini << content.rdbuf();
-    return true;
 }
