@@ -26,6 +26,13 @@ Makefile targets:
 
 ## Quick start
 
+> [!TIP]
+>`get_prop_from_path` retrieves the property by searching inside the path
+> provided. By default the separator is '/' but it's customizable.
+> 
+> `get_section_from_path` retrieves the sections (as a reference) by searching
+> inside the path provided. By default the separator is '/' but it's customizable.
+
 Reading an existing file:
 
 ```cpp
@@ -63,10 +70,3 @@ int main(void) {
     return 0;
 }
 ```
-
-> [!TIP]
->`get_prop_from_path` retrieves the property by searching inside the path
-> provided. By default the separator is '/' but it's customizable.
-> 
-> `get_section_from_path` retrieves the sections (as a reference) by searching
-> inside the path provided. By default the separator is '/' but it's customizable.
