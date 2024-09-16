@@ -190,12 +190,20 @@ mini::Section &mini::Section::get_section(std::string name) {
     return this->sections.at(name);
 }
 
+bool mini::Section::del_section(std::string name) {
+    return this->sections.erase(name);
+}
+
 bool mini::Section::add_prop(std::string name, std::string val) {
     return this->props.insert(std::make_pair(name, val)).second;
 }
 
 std::string &mini::Section::get_prop(std::string name) {
     return this->props.at(name);
+}
+
+bool mini::Section::del_prop(std::string name) {
+    return this->props.erase(name);
 }
 
 std::string &mini::Object::get_prop_from_path(std::string path, char separator) {
@@ -229,6 +237,40 @@ mini::Section &mini::Object::get_section_from_path(std::string path, char separa
     }
 
     return sec->get_section(vpath.at(0));
+}
+        
+bool mini::Object::del_prop_from_path(std::string path, char separator) {
+    auto vpath = split_from_separator(path, separator);
+    // by default at least one word needs to be provided.
+    if (vpath.size() < 1) 
+        throw std::runtime_error("Invalid search path provided. At least one word is expected.");
+
+    // pointing to the correct section.
+    Section *sec = &this->global;
+    while (vpath.size() > 1) {
+        sec = &sec->get_section(vpath.at(0));
+        vpath.erase(vpath.begin());
+    }
+
+    // treating the last as the property name.
+    return sec->del_prop(vpath.at(0));
+}
+
+bool mini::Object::del_section_from_path(std::string path, char separator) {
+    auto vpath = split_from_separator(path, separator);
+    // by default at least one word needs to be provided.
+    if (vpath.size() < 1) 
+        throw std::runtime_error("Invalid search path provided. At least one word is expected.");
+
+    // pointing to the correct section.
+    Section *sec = &this->global;
+    while (vpath.size() > 1) {
+        sec = &sec->get_section(vpath.at(0));
+        vpath.erase(vpath.begin());
+    }
+
+    // treating the last as the property name.
+    return sec->del_section(vpath.at(0));
 }
 
 mini::Object mini::read(std::string at) {

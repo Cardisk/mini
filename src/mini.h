@@ -27,9 +27,11 @@ namespace mini {
 
         bool add_prop(std::string name, std::string val);
         std::string &get_prop(std::string name);
+        bool del_prop(std::string name);
         
         bool add_section(std::string name);
         Section &get_section(std::string name);
+        bool del_section(std::string name);
     private:
         std::string name;
         std::string path;
@@ -49,6 +51,8 @@ namespace mini {
 
         std::string &get_prop_from_path(std::string path, char separator = '/');
         Section &get_section_from_path(std::string path = "", char separator = '/');
+        bool del_prop_from_path(std::string path, char separator = '/');
+        bool del_section_from_path(std::string path, char separator = '/');
 
     private:
         std::string file_path;
