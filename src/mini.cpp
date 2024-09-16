@@ -47,6 +47,12 @@ namespace {
                 continue;
             }
 
+            if (src[cur] == '#') {
+                cur++;
+                while (src[cur] != '\n') cur++;
+                continue;
+            }
+
             if (src[cur] == ' ') {
                 // ISSUE(#4): maybe handle token position?
                 cur++;

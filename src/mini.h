@@ -11,6 +11,7 @@ namespace mini {
     typedef std::unordered_map<std::string, std::string> Props;
     typedef std::unordered_map<std::string, Section> Sections;
 
+    // Node class
     class Section {
     public:
         explicit Section(std::string name = "global", std::string path = ""): name(std::move(name)),
@@ -39,6 +40,7 @@ namespace mini {
         Sections sections;
     };
 
+    // File representation
     class Object {
     public:
         explicit Object(std::string path = ""): file_path(std::move(path)), 
@@ -49,6 +51,7 @@ namespace mini {
 
         Section &get_global() { return this->global; }
 
+        // utilities
         std::string &get_prop_from_path(std::string path, char separator = '/');
         Section &get_section_from_path(std::string path = "", char separator = '/');
         bool del_prop_from_path(std::string path, char separator = '/');
