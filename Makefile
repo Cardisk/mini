@@ -1,7 +1,5 @@
 .PHONY: all example run_example test run_test clean
 
-all: example test
-
 example: src/CMakeLists.txt
 	mkdir -p build
 	cmake -B build src/
